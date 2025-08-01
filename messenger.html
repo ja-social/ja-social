@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JA Social - Messenger</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8VlaiMuzEsdPxBbjgUyH0qSK-usrOTqQ",
+      authDomain: "ja-social-6ad76.firebaseapp.com",
+      databaseURL: "https://ja-social-6ad76-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "ja-social-6ad76",
+      storageBucket: "ja-social-6ad76.appspot.com",
+      messagingSenderId: "292467316349",
+      appId: "1:292467316349:web:5cd513eae9e46fee504314",
+      measurementId: "G-6MFGPG1Q5P"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();
+    const database = firebase.database();
+  </script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <a href="index.html" title="Home" class="sidebar-link">🏠</a>
+    <a href="watch.html" title="Watch" class="sidebar-link">🎬</a>
+    <a href="messenger.html" title="Messenger" class="sidebar-link">💬</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header>JA Social - Messenger</header>
+
+    <section id="chat-section">
+      <input type="text" id="chat-name" placeholder="Your name" autocomplete="off" />
+      <textarea id="chat-message" placeholder="Type a message" autocomplete="off"></textarea>
+      <button id="chat-send-btn">Send</button>
+      <div id="chat-messages"></div>
+    </section>
+  </div>
+
+  <script>
+    const chatName = document.getElementById('chat-name');
+    const chatMessage = document.getElementById('chat-message');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+    const chatMessages = document.getElementById('chat-messages');
+
+    chatSendBtn.addEventListener('click', () => {
+      const name = chatName.value.trim();
+      const msg = chatMessage.value.trim();
+      if (!name || !msg) return alert("Both name and message required.");
+      database.ref('chatMessages').push({ name, message: msg, timestamp: Date.now() });
+      chatMessage.value = '';
+    });
+
+    database.ref('chatMessages').on('child_added', snapshot => {
+      const data = snapshot.val();
+      const div = document.createElement('div');
+      div.className = 'chat-message';
+      div.innerHTML = `<div class="chat-name">${data.name}</div><div>${data.message}</div>`;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+  </script>
+</body>
+</html>

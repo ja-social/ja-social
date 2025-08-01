@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JA Social - Home</title>
+  <link rel="stylesheet" href="style.css" />
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8VlaiMuzEsdPxBbjgUyH0qSK-usrOTqQ",
+      authDomain: "ja-social-6ad76.firebaseapp.com",
+      databaseURL: "https://ja-social-6ad76-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "ja-social-6ad76",
+      storageBucket: "ja-social-6ad76.appspot.com",
+      messagingSenderId: "292467316349",
+      appId: "1:292467316349:web:5cd513eae9e46fee504314",
+      measurementId: "G-6MFGPG1Q5P"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();
+    const database = firebase.database();
+  </script>
+</head>
+<body>
+  <!-- Top right icon bar -->
+  <div class="top-right-icons">
+    <a href="index.html" title="Home">🏠</a>
+    <a href="watch.html" title="Watch">🎬</a>
+    <a href="messenger.html" title="Messenger">💬</a>
+  </div>
+
+  <div class="main">
+    <header>JA Social</header>
+
+    <!-- Home/Post Section -->
+    <section id="new-post">
+      <textarea id="post-text" maxlength="280" placeholder="What's on your mind?"></textarea>
+      <div id="controls">
+        <button id="post-btn">Post</button>
+        <button id="clear-btn">Clear Posts</button>
+      </div>
+      <div id="char-counter">0 / 280</div>
+      <div id="feed"></div>
+    </section>
+  </div>
+
+  <script>
+    // Post character counter
+    const postText = document.getElementById('post-text');
+    const charCounter = document.getElementById('char-counter');
+    postText.addEventListener('input', () => {
+      charCounter.textContent = `${postText.value.length} / 280`;
+    });
+
+    // Handle Post
+    const postBtn = document.getElementById('post-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const feed = document.getElementById('feed');
+
+    postBtn.addEventListener('click', () => {
+      const text = postText.value.trim();
+      if (!text) return alert("Write something first.");
+      database.ref('posts').push({ content: text, timestamp: Date.now() });
+      postText.value = '';
+      charCounter.textContent = '0 / 280';
+    });
+
+    clearBtn.addEventListener('click', () => {
+      if (confirm("Clear all posts?")) database.ref('posts').remove();
+    });
+
+    database.ref('posts').on('value', snapshot => {
+      feed.innerHTML = '';
+      const posts = snapshot.val();
+      if (!posts) return;
+      Object.values(posts).forEach(post => {
+        const div = document.createElement('div');
+        div.className = 'post';
+        div.innerHTML = `<div>${post.content}</div><div style="font-size:12px;color:#a00040;">${new Date(post.timestamp).toLocaleString()}</div>`;
+        feed.appendChild(div);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JA Social - Watch</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #ffe6f0;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+    }
+
+    .video-container {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      scroll-snap-align: start;
+    }
+
+    video {
+      width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="video-container">
+    <video src="videos/video1.mp4" muted playsinline></video>
+  </div>
+
+  <div class="video-container">
+    <video src="videos/video2.mp4" muted playsinline></video>
+  </div>
+
+  <script>
+    // Pause other videos when scrolling
+    const videos = document.querySelectorAll("video");
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.play();
+        } else {
+          entry.target.pause();
+        }
+      });
+    }, { threshold: 0.7 });
+
+    videos.forEach(video => {
+      observer.observe(video);
+    });
+  </script>
+</body>
+</html>
